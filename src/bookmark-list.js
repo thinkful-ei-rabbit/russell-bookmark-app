@@ -2,6 +2,37 @@ import $ from 'jquery';
 import store from './store';
 import api from './api';
 
+const generateHeaderAndMain = function () {
+    let main = `
+        <header>
+            <h1>BOOKMARKit</h1>
+        </header>
+        
+        <section class="sub-container">
+            <div class="button-container"><span class="add-bookmark"><button>+ NEW<i id="bkmk-icon" class="fas fa-bookmark"></i></button></span></div>
+            <div class="filter">
+                <select name="filter" id="filter">
+                    <option value="0">Filter By Rating</option>
+                    <option value="1">Show Only 1 Star Ratings</option>
+                    <option value="2">Show Only 2 Star Ratings</option>
+                    <option value="3">Show Only 3 Star Ratings</option>
+                    <option value="4">Show Only 4 Star Ratings</option>
+                    <option value="5">Show Only 5 Star Ratings</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="form-container"></div>
+        <div class="error-container"></div>
+
+        <section class="bookmark-section">
+            <div class="bookmark-list-container"></div>
+        </section>
+    `;
+
+    $('#root').html(main);
+};
+
 
 const generateError = function (message) {
     return `
@@ -143,11 +174,14 @@ const generateExpandView = function (bookmark) {
     return `
         <li class="js-bookmark-element-expanded" data-bookmark-id="${bookmark.id}">
             <h2>${bookmarkName}</h2>
-            <div class="icons"><i id="icon edit" class="fas fa-edit"></i><i id="icon delete" class="fas fa-trash-alt"></i></div>
+            <div class="icons">
+                <button class="edit" type="button"><i id="icon edit" class="fas fa-edit"></i></button>
+                <button class="delete" type="button"><i id="icon delete" class="fas fa-trash-alt"></i></button>
+            </div>
             <div class="expand-cont">
-                    <p class="description">${bookmarkDesc}</p>
-                    <button class="site-button" type="button"><a href="${bookmarkURL}" target="_blank">Visit Site</a></button>
-                </div>
+                <p class="description">${bookmarkDesc}</p>
+                <button class="site-button" type="button"><a href="${bookmarkURL}" target="_blank">Visit Site</a></button>
+            </div>
         </li>
             `;
 };
@@ -161,25 +195,22 @@ const handleBookmarkClicked = function () {
                 bookmark = store.bookmarks[i];
             }
         }
-        const bookmarkName = bookmark.title;
-        const bookmarkRating = bookmark.rating;
         const expandedView = generateExpandView(bookmark);
         store.toggleExpandBookmark(bookmark.id);
         if (store.bookmarks.expanded === true) {
             $(event.target).html(expandedView);
         } else {
-            $(event.target).html(
-                `
-                ${bookmarkName}
-                <div class="rating">${bookmarkRating}</div>
-            `);
+            render();
         }
     });
 };
 
 const handleDeleteBookmarkClicked = function () {
-    $('.js-bookmaark-element-expanded').on('click', '.delete', event => {
+    $('.js-bookmark-element-expanded').on('click', '.delete', function (event) {
+        event.preventDefault();
+        console.log('button clicked')
         const id = getIdFromElement(event.currentTarget);
+        console.log(id)
         api.deleteBookmark(id)
             .then(() => {
                 store.findAndDelete(id);
@@ -225,6 +256,7 @@ const handleEditBookmarkSubmit = function () {
 
 
 const bindEventListeners = function () {
+    generateHeaderAndMain();
     handleCloseError();
     handleNewBookmarkClicked();
     handleNewBookmarkSubmit();

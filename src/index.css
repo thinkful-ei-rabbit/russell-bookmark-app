@@ -181,7 +181,7 @@ body {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
-  
+
   ul,
   li {
     list-style-type: none;
@@ -199,6 +199,15 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
+  }
+
+  .edit {
+    margin: 5px;
+  }
+
+  .delete {
+    margin: 5px;
   }
   
   /* #icon {
